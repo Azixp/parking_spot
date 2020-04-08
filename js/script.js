@@ -137,15 +137,21 @@ $(document).ready(function() {
         $('.park_moto_24h').text(tab[k].tarif_moto_24h);
 
         $('#abo').click(function(){
+            $('.table2').css('display', 'inline-table');
             abonnement()
+        });
+
+        $('#reserveration_unite').click(function(){
+            $('.table3').css('display', 'inline-table');
+            reservation()
         });
     }
 
     function abonnement(){
         $('#abo_select').change(function(){
-            var selectedValue = $(this).val();
+            var selectedValueAbo = $(this).val();
 
-            switch (selectedValue) {
+            switch (selectedValueAbo) {
                 case 'abo_m_v':
                     $(".prix_abo").html(tab[k].abo_car_month + " €");
                     break;
@@ -170,18 +176,63 @@ $(document).ready(function() {
 
 
             if ($('.prix_abo').html() == "ND €"){
-                $('.confirmer').attr('disabled', '1');
-                $('.confirmer').css('opacity', '0.6');
+                $('.confirmerAbo').attr('disabled', '1');
+                $('.confirmerAbo').css('opacity', '0.6');
             }else {
-                var attr = $('.confirmer').attr('disabled');
+                var attr = $('.confirmerAbo').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {
-                $('.confirmer').removeAttr('disabled');
-                $('.confirmer').css('opacity', '1');
+                $('.confirmerAbo').removeAttr('disabled');
+                $('.confirmerAbo').css('opacity', '1');
                 }
             }
 
         })
     }
+
+    function reservation(){
+        $('#tarif_select').change(function(){
+            var selectedValueUnite = $(this).val();
+
+            switch (selectedValueUnite) {
+                case 'tarif30m_v':
+                    $(".prix_unite").html(tab[k].tarif_car_30m + " €");
+                    break;
+                case 'tarif1h_v':
+                    $(".prix_unite").html(tab[k].tarif_car_1h + " €");
+                    break;
+                case 'tarif15m_m':
+                    $(".prix_unite").html(tab[k].tarif_moto_15m + " €");
+                    break;
+                case 'tarif30m_m':
+                    $(".prix_unite").html(tab[k].tarif_moto_30m + " €");
+                    break;
+                case 'tarif24h_m':
+                    $(".prix_unite").html(tab[k].tarif_moto_24h + " €");
+                    break;
+                default:
+                $(".prix_abo").html("");
+            };
+
+            if ($('.prix_unite').html() == "ND €"){
+                $('.confirmerUnite').attr('disabled', '1');
+                $('.confirmerUnite').css('opacity', '0.6');
+            }else {
+                var attr = $('.confirmerUnite').attr('disabled');
+                if (typeof attr !== typeof undefined && attr !== false) {
+                $('.confirmerUnite').removeAttr('disabled');
+                $('.confirmerUnite').css('opacity', '1');
+                }
+            }
+
+
+        })
+
+
+
+
+    }
+
+
 
 
 

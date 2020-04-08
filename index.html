@@ -22,8 +22,8 @@
       <div class="container">
           <div id="myMap"></div>
 
-          <table class="table table-striped table-bordered table-hover" id="zeb">
-              <tr>
+          <table class="table table-striped table-bordered table-hover">
+              <tr data-tableau="name">
                   <th>Nom</th>
                   <td class="park_name"></td>
               </tr>
@@ -96,7 +96,7 @@
               <tr>
                   <td>
                       <button type="button" name="button" id="abo">S'abonner</button>
-                      <button type="button" name="button" class="reservation">Réserver à l'unité</button>
+                      <button type="button" name="button" id="reserveration_unite">Réserver à l'unité</button>
                   </td>
               </tr>
           </table>
@@ -104,7 +104,7 @@
 
 
           <form class="" action="index.html" metdod="post">
-              <table class="table table-striped table-bordered table-hover">
+              <table class="table table-striped table-bordered table-hover table2">
                   <tr>
                       <th> <label for="selection">Type/Abonnement</label> </th>
                       <th>Prix</th>
@@ -125,7 +125,7 @@
                       </td>
                       <td class="prix_abo"></td>
                       <td> <input type="date" name="" value=""> </td>
-                      <td> <input type="button" class="confirmer" name="" value="Confirmer réservation"> </td>
+                      <td> <input type="button" class="confirmerAbo" name="" value="Confirmer réservation"> </td>
                   </tr>
               </table>
           </form>
@@ -133,7 +133,7 @@
 
 
           <form class="" action="index.html" metdod="post">
-              <table class="table table-striped table-bordered table-hover">
+              <table class="table table-striped table-bordered table-hover table3">
                   <tr>
                       <th> <label for="selection">Type/Tarif</label> </th>
                       <th>Prix</th>
@@ -147,13 +147,13 @@
                               <option value="tarif30m_v">Tarif 30 minutes Voiture</option>
                               <option value="tarif1h_v">Tarif 1 heure Voiture</option>
                               <option value="tarif15m_m">Tarif 15 minutes Moto</option>
-                              <option value="tarif15m_m">Tarif 30 minutes Moto</option>
+                              <option value="tarif30m_m">Tarif 30 minutes Moto</option>
                               <option value="tarif24h_m">Tarif 24H Moto</option>
                           </select>
                       </td>
                       <td class="prix_unite"></td>
                       <td> <input type="date" name="" value=""> </td>
-                      <td> <input type="button" name="" value="Confirmer réservation"> </td>
+                      <td> <input type="button" class="confirmerUnite" name="" value="Confirmer réservation"> </td>
                   </tr>
               </table>
           </form>
