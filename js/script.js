@@ -166,30 +166,21 @@ $(document).ready(function() {
                     break;
                 default:
                 $(".prix_abo").html("");
-            };
+            }
 
 
             if ($('.prix_abo').html() == "ND €"){
-                var attr_2 = $('.confirmer').attr('enabled');
-                if(typeof attr_2 !== typeof undefined && attr_2 !== false){
-                    $('.confirmer').removeAttr('enabled');
-                    $('.confirmer').attr('disabled', '1');
-                    $('.confirmer').css('opacity', '0.6');
-                }
-                else{
-                    $('.confirmer').attr('disabled', '1');
-                    $('.confirmer').css('opacity', '0.6');
-                }
+                $('.confirmer').attr('disabled', '1');
+                $('.confirmer').css('opacity', '0.6');
             }else {
                 var attr = $('.confirmer').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {
-                    $('.confirmer').removeAttr('disabled');
-                    $('.confirmer').attr('enabled', '1');
-                    $('.confirmer').css('opacity', '1');
+                $('.confirmer').removeAttr('disabled');
+                $('.confirmer').css('opacity', '1');
                 }
             }
-        });
 
+        })
     }
 
 
