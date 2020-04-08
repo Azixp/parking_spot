@@ -16,7 +16,7 @@ function GetMap()
 
 
 $(document).ready(function() {
-    var tab = [];
+     tab = [];
 
     function parkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
       this.geo = a;
@@ -112,7 +112,7 @@ $(document).ready(function() {
         loc.splice(2);
 
 
-        for(var k = 0; k < tab.length; k++){
+        for(k = 0; k < tab.length; k++){
             if(tab[k].geo[0] === loc[0] && tab[k].geo[1] === loc[1]){
                 break;
             }
@@ -126,7 +126,7 @@ $(document).ready(function() {
         $('.park_bike_access').text(tab[k].bikeAcces);
         $('.park_car_M').text(tab[k].abo_car_month);
         $('.park_car_Y').text(tab[k].abo_car_year);
-        $('.park_moto_M ').text(tab[k].abo_moto_month);
+        $('.park_moto_M').text(tab[k].abo_moto_month);
         $('.park_moto_Q').text(tab[k].abo_moto_quart);
         $('.park_moto_Y').text(tab[k].abo_moto_year);
         $('.park_bike_M').text(tab[k].abo_bike_month);
@@ -141,7 +141,43 @@ $(document).ready(function() {
         });
     }
 
-    function abonnement(e){
-        console.log(e);
+    function abonnement(){
+        $('#abo_select').change(function(){
+            var selectedValue = $(this).val();
+
+            switch (selectedValue) {
+                case 'abo_m_v':
+                    $(".prix_abo").html(tab[k].abo_car_month + " €");
+                    break;
+                case 'abo_y_v':
+                    $(".prix_abo").html(tab[k].abo_car_year + " €");
+                    break;
+                case 'abo_m_m':
+                    $(".prix_abo").html(tab[k].abo_moto_month + " €");
+                    break;
+                case 'abo_t_m':
+                    $(".prix_abo").html(tab[k].abo_moto_quart + " €");
+                    break;
+                case 'abo_a_m':
+                    $(".prix_abo").html(tab[k].abo_moto_year + " €");
+                    break;
+                case 'abo_m_velo':
+                    $(".prix_abo").html(tab[k].abo_bike_month + " €");
+                    break;
+                default:
+                $(".prix_abo").html("");
+
+            }
+            if ($('.prix_abo').html() == "ND €"){
+                $('.confirmer').attr('disabled', '1');
+                $('.confirmer').css('opacity', '0.6');
+            }else {
+                $('.confirmer').attr('enabled', '1');
+                $('.confirmer').css('opacity', '1');
+            }
+        })
     }
+
+
+
 });
