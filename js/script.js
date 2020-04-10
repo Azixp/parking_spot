@@ -1,10 +1,58 @@
 
+const carouselSlide = document.querySelector('.carousel-slide');
+const carouselImages = document.querySelectorAll('.carousel-slide img');
+
+//Buttons
+const prevBtn = document.querySelector('#prevBtn')
+const nextBtn = document.querySelector('#nextBtn')
+
+//Counter
+let counter = 1;
+const size = carouselImages[0].clientWidth;
+
+carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+
+//Button Listeners
+
+nextBtn.addEventListener('click', function(){
+    if (counter >= carouselImages.length - 1){
+        return;
+    }
+    carouselSlide.style.transition = "transform 0.4s ease-in-out";
+    counter++;
+    carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+
+});
+
+prevBtn.addEventListener('click', function(){
+    if (counter <= 0){
+        return;
+    }
+    carouselSlide.style.transition = "transform 0.4s ease-in-out";
+    counter--;
+    carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+});
+
+carouselSlide.addEventListener('transitionend', function(){
+    if (carouselImages[counter].id === 'lastClone'){
+        carouselSlide.style.transition = "none";
+        counter = carouselImages.length - 2;
+        carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+    }
+    if (carouselImages[counter].id === 'firstClone'){
+        carouselSlide.style.transition = "none";
+        counter = carouselImages.length - counter;
+        carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
+    }
+});
+
+
+// Bing Maps
 function GetMap()
 {
     var myOptions = {
         credentials: 'ApPosPKV1rtvE9V9fpx_YULKyRhck7DFk2YZ2BT6XNNpeACIunUO7lN_m8L0Kp1e',
         center: new Microsoft.Maps.Location(48.8534, 2.3488),
-        //mapTypeId: Microsoft.Maps.MapTypeId.aerial,
         zoom: 12
     }
     map = new Microsoft.Maps.Map('#myMap', myOptions);
@@ -16,27 +64,27 @@ function GetMap()
 
 
 $(document).ready(function() {
-     tab = [];
+     parkingList = [];
 
     function parkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
       this.geo = a;
       this.name = b;
-      this.adress = c;
-      this.telephone = d;
+      this.address = c;
+      this.contact = d;
       this.timeTable = e;
       this.motorBikeAcces = f;
       this.bikeAcces = g;
-      this.abo_car_month = h;
-      this.abo_car_year = i;
-      this.abo_moto_month = j;
-      this.abo_moto_quart = k;
-      this.abo_moto_year = l;
-      this.abo_bike_month = m;
-      this.tarif_car_30m = n;
-      this.tarif_car_1h = o;
-      this.tarif_moto_15m = p;
-      this.tarif_moto_30m = q;
-      this.tarif_moto_24h = r;
+      this.sub_car_month = h;
+      this.sub_car_year = i;
+      this.sub_moto_month = j;
+      this.sub_moto_quart = k;
+      this.sub_moto_year = l;
+      this.sub_bike_month = m;
+      this.rate_car_30m = n;
+      this.rate_car_1h = o;
+      this.rate_moto_15m = p;
+      this.rate_moto_30m = q;
+      this.rate_moto_24h = r;
     }
 
 
@@ -52,7 +100,7 @@ $(document).ready(function() {
 
     request.done(function(response){
         for (var i = 0; i < response.records.length; i++){
-         tab.push(new parkingSpot(
+         parkingList.push(new parkingSpot(
          response.records[i].fields["geo_point_2d"],
          response.records[i].fields["nom_parc"],
          response.records[i].fields["adress_ssc"],
@@ -74,26 +122,26 @@ $(document).ready(function() {
          ));
         }
 
-        for (var j = 0; j < tab.length; j++){
-            center = new Microsoft.Maps.Location(tab[j].geo[0],tab[j].geo[1]);
+        for (var j = 0; j < parkingList.length; j++){
+            center = new Microsoft.Maps.Location(parkingList[j].geo[0],parkingList[j].geo[1]);
             pin = new Microsoft.Maps.Pushpin(center,{
-                //color: '#00cef7'
+
                 icon : "images/pin.png",
                 anchor: new Microsoft.Maps.Point(12, 12)
             });
             pin.metadata = {
-              title: tab[j].name,
+              title: parkingList[j].name,
             };
 
             Microsoft.Maps.Events.addHandler(pin, 'mouseover', pushpinClicked);
-            Microsoft.Maps.Events.addHandler(pin, 'click', display);
+            Microsoft.Maps.Events.addHandler(pin, 'click', displayInformations);
             map.entities.push(pin)
         };
 
 
         function pushpinClicked(e) {
            if (e.target.metadata) {
-            //Set the infobox options with the metadata of the pushpin.
+
             infobox.setOptions({
                 location: e.target.getLocation(),
                 title: e.target.metadata.title,
@@ -104,16 +152,15 @@ $(document).ready(function() {
 
     })
 
-    //console.log(pin)
 
-    function display(e){
+    function displayInformations(e){
         var loc = e.target.getLocation();
         loc = Object.values(loc);
         loc.splice(2);
 
 
-        for(k = 0; k < tab.length; k++){
-            if(tab[k].geo[0] === loc[0] && tab[k].geo[1] === loc[1]){
+        for(k = 0; k < parkingList.length; k++){
+            if(parkingList[k].geo[0] === loc[0] && parkingList[k].geo[1] === loc[1]){
                 break;
             }
         }
@@ -121,113 +168,110 @@ $(document).ready(function() {
 
         var x = 0;
 
-        $.each(tab[k], function(key, value){
+        $.each(parkingList[k], function(key, value){
             if(key == 'geo'){
                 return
             }
             if(value == undefined){
-                $('.table1 td').eq(x++).html("");
+                $('.display_info').eq(x++).html("Indisponible");
             }else{
-                $('.table1 td').eq(x++).html(value);
+                $('.display_info').eq(x++).html(value);
             }
         });
 
 
 
-        $('#abo').click(function(){
+        $('#subscribe').click(function(){
             $('.table2').css('display', 'inline-table');
-            abonnement()
+            subscriptionTable()
         });
 
-        $('#reserveration_unite').click(function(){
+        $('#booking').click(function(){
             $('.table3').css('display', 'inline-table');
-            reservation()
+            bookingTable()
         });
     }
 
 
-    function abonnement(){
-        $('#abo_select').change(function(){
+    function subscriptionTable(){
+        $('#subscription_select').change(function(){
             var selectedValueAbo = $(this).val();
 
             switch (selectedValueAbo) {
                 case 'abo_m_v':
-                    $(".prix_abo").html(tab[k].abo_car_month + " €");
+                    $(".sub_price").html(parkingList[k].sub_car_month + " €");
                     break;
                 case 'abo_y_v':
-                    $(".prix_abo").html(tab[k].abo_car_year + " €");
+                    $(".sub_price").html(parkingList[k].sub_car_year + " €");
                     break;
                 case 'abo_m_m':
-                    $(".prix_abo").html(tab[k].abo_moto_month + " €");
+                    $(".sub_price").html(parkingList[k].sub_moto_month + " €");
                     break;
                 case 'abo_t_m':
-                    $(".prix_abo").html(tab[k].abo_moto_quart + " €");
+                    $(".sub_price").html(parkingList[k].sub_moto_quart + " €");
                     break;
                 case 'abo_a_m':
-                    $(".prix_abo").html(tab[k].abo_moto_year + " €");
+                    $(".sub_price").html(parkingList[k].sub_moto_year + " €");
                     break;
                 case 'abo_m_velo':
-                    $(".prix_abo").html(tab[k].abo_bike_month + " €");
+                    $(".sub_price").html(parkingList[k].sub_bike_month + " €");
                     break;
                 default:
-                $(".prix_abo").html("");
+                $(".sub_price").html("");
             }
 
 
-            if ($('.prix_abo').html() == "ND €"){
-                $('.confirmerAbo').attr('disabled', '1');
-                $('.confirmerAbo').css('opacity', '0.6');
+            if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" ){
+                $('.sub_confirmation').attr('disabled', '1');
+
             }else {
-                var attr = $('.confirmerAbo').attr('disabled');
+                var attr = $('.sub_confirmation').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {
-                $('.confirmerAbo').removeAttr('disabled');
-                $('.confirmerAbo').css('opacity', '1');
+                $('.sub_confirmation').removeAttr('disabled');
+
                 }
             }
         })
     }
 
-    function reservation(){
-        $('#tarif_select').change(function(){
-            var selectedValueUnite = $(this).val();
 
-            switch (selectedValueUnite) {
-                case 'tarif30m_v':
-                    $(".prix_unite").html(tab[k].tarif_car_30m + " €");
+    function bookingTable(){
+        $('#tarif_select').change(function(){
+            var selectedValueUnit = $(this).val();
+
+            switch (selectedValueUnit) {
+                case 'rate30m_c':
+                    $(".unit_price").html(parkingList[k].rate_car_30m + " €");
                     break;
-                case 'tarif1h_v':
-                    $(".prix_unite").html(tab[k].tarif_car_1h + " €");
+                case 'rate1h_c':
+                    $(".unit_price").html(parkingList[k].rate_car_1h + " €");
                     break;
-                case 'tarif15m_m':
-                    $(".prix_unite").html(tab[k].tarif_moto_15m + " €");
+                case 'rate15m_m':
+                    $(".unit_price").html(parkingList[k].rate_moto_15m + " €");
                     break;
-                case 'tarif30m_m':
-                    $(".prix_unite").html(tab[k].tarif_moto_30m + " €");
+                case 'rate30m_m':
+                    $(".unit_price").html(parkingList[k].rate_moto_30m + " €");
                     break;
-                case 'tarif24h_m':
-                    $(".prix_unite").html(tab[k].tarif_moto_24h + " €");
+                case 'rate24h_m':
+                    $(".unit_price").html(parkingList[k].rate_moto_24h + " €");
                     break;
                 default:
-                $(".prix_unite").html("");
+                $(".unit_price").html("");
             };
 
-            if ($('.prix_unite').html() == "ND €"){
-                $('.confirmerUnite').attr('disabled', '1');
-                $('.confirmerUnite').css('opacity', '0.6');
+            if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €"){
+                $('.confirmeBooking').attr('disabled', '1');
+                $('.confirmeBooking').css('opacity', '0.6');
             }else {
-                var attr = $('.confirmerUnite').attr('disabled');
+                var attr = $('.confirmeBooking').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {
-                $('.confirmerUnite').removeAttr('disabled');
-                $('.confirmerUnite').css('opacity', '1');
+                $('.confirmeBooking').removeAttr('disabled');
+                $('.confirmeBooking').css('opacity', '1');
                 }
             }
 
 
         })
     }
-
-
-
-
-
+    
 });
