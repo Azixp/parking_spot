@@ -118,23 +118,21 @@ $(document).ready(function() {
             }
         }
 
-        $('.park_name').text(tab[k].name);
-        $('.park_address').text(tab[k].adress);
-        $('.park_tel').text(tab[k].telephone);
-        $('.park_timeTable').text(tab[k].timeTable);
-        $('.park_moto_access').text(tab[k].motorBikeAcces);
-        $('.park_bike_access').text(tab[k].bikeAcces);
-        $('.park_car_M').text(tab[k].abo_car_month);
-        $('.park_car_Y').text(tab[k].abo_car_year);
-        $('.park_moto_M').text(tab[k].abo_moto_month);
-        $('.park_moto_Q').text(tab[k].abo_moto_quart);
-        $('.park_moto_Y').text(tab[k].abo_moto_year);
-        $('.park_bike_M').text(tab[k].abo_bike_month);
-        $('.park_car_30m').text(tab[k].tarif_car_30m);
-        $('.park_car_1h').text(tab[k].tarif_car_1h);
-        $('.park_moto_15m').text(tab[k].tarif_moto_15m);
-        $('.park_moto_30m').text(tab[k].tarif_moto_30m);
-        $('.park_moto_24h').text(tab[k].tarif_moto_24h);
+
+        var x = 0;
+
+        $.each(tab[k], function(key, value){
+            if(key == 'geo'){
+                return
+            }
+            if(value == undefined){
+                $('.table1 td').eq(x++).html("");
+            }else{
+                $('.table1 td').eq(x++).html(value);
+            }
+        });
+
+
 
         $('#abo').click(function(){
             $('.table2').css('display', 'inline-table');
@@ -146,6 +144,7 @@ $(document).ready(function() {
             reservation()
         });
     }
+
 
     function abonnement(){
         $('#abo_select').change(function(){
@@ -185,7 +184,6 @@ $(document).ready(function() {
                 $('.confirmerAbo').css('opacity', '1');
                 }
             }
-
         })
     }
 
@@ -210,7 +208,7 @@ $(document).ready(function() {
                     $(".prix_unite").html(tab[k].tarif_moto_24h + " €");
                     break;
                 default:
-                $(".prix_abo").html("");
+                $(".prix_unite").html("");
             };
 
             if ($('.prix_unite').html() == "ND €"){
@@ -226,10 +224,6 @@ $(document).ready(function() {
 
 
         })
-
-
-
-
     }
 
 
