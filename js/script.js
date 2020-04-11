@@ -221,14 +221,13 @@ $(document).ready(function() {
             }
 
 
-            if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" ){
+            if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" || $('.sub_price').html() == ""){
                 $('.sub_confirmation').attr('disabled', '1');
 
             }else {
                 var attr = $('.sub_confirmation').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {
                 $('.sub_confirmation').removeAttr('disabled');
-
                 }
             }
         })
@@ -259,19 +258,15 @@ $(document).ready(function() {
                 $(".unit_price").html("");
             };
 
-            if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €"){
+            if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €" || $('.unit_price').html() == ""){
                 $('.confirmeBooking').attr('disabled', '1');
-                $('.confirmeBooking').css('opacity', '0.6');
             }else {
                 var attr = $('.confirmeBooking').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {
                 $('.confirmeBooking').removeAttr('disabled');
-                $('.confirmeBooking').css('opacity', '1');
                 }
             }
-
-
         })
     }
-    
+
 });

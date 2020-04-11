@@ -120,15 +120,15 @@
           <form class="" action="index.html" metdod="post">
               <table class="table table-striped table-bordered table-hover table2">
                   <tr>
-                      <th> <label for="selection">Type/Abonnement</label> </th>
-                      <th>Prix</th>
-                      <th>Date</th>
-                      <th> <label for="confirmation">Confirmer la réservation</label> </th>
+                      <th> <label for="selection">Type/Abonnement:</label> </th>
+                      <th>Prix:</th>
+                      <th>Date:</th>
+                      <th> <label for="confirmation">Confirmation</label> </th>
                   </tr>
                   <tr>
                       <td>
                           <select id="subscription_select" name="type_vehicule">
-                              <option value="select">Choisir</option>
+                              <option value="select" selected>Choisir</option>
                               <option value="abo_m_v">Abonnement Mensuel Voiture</option>
                               <option value="abo_y_v">Abonnement Annuel Voiture</option>
                               <option value="abo_m_m">Abonnement Mensuel Moto</option>
@@ -139,7 +139,7 @@
                       </td>
                       <td class="sub_price"></td>
                       <td> <input type="date" name="" value=""> </td>
-                      <td> <input type="button" class="btn btn-success btn-sm sub_confirmation" name="" value="Confirmer réservation"> </td>
+                      <td> <input type="button" class="btn btn-success btn-sm sub_confirmation" name="" value="Confirmer réservation" disabled> </td>
                   </tr>
               </table>
           </form>
@@ -149,15 +149,15 @@
           <form class="" action="index.html" metdod="post">
               <table class="table table-striped table-bordered table-hover table3">
                   <tr>
-                      <th> <label for="selection">Type/Tarif</label> </th>
-                      <th>Prix</th>
-                      <th>Date</th>
-                      <th> <label for="confirmation">Confirmer la réservation</label> </th>
+                      <th> <label for="selection">Type/Tarif:</label> </th>
+                      <th>Prix:</th>
+                      <th>Date:</th>
+                      <th> <label for="confirmation">Confirmation:</label> </th>
                   </tr>
                   <tr>
                       <td>
                           <select id="tarif_select" name="type_vehicule">
-                              <option value="select">Choisir</option>
+                              <option value="select" selected>Choisir</option>
                               <option value="rate30m_c">Tarif 30 minutes Voiture</option>
                               <option value="rate1h_c">Tarif 1 heure Voiture</option>
                               <option value="rate15m_m">Tarif 15 minutes Moto</option>
@@ -167,7 +167,7 @@
                       </td>
                       <td class="unit_price"></td>
                       <td> <input type="date" name="" value=""> </td>
-                      <td> <input type="button" class="btn btn-success btn-sm confirmeBooking" name="" value="Confirmer réservation"> </td>
+                      <td> <input type="button" class="btn btn-success btn-sm confirmeBooking" name="" value="Confirmer réservation" disabled> </td>
                   </tr>
               </table>
           </form>
