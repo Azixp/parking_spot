@@ -15,6 +15,7 @@ function GetMap()
 }
 
 
+
 $(document).ready(function() {
      parkingList = [];
 
@@ -39,7 +40,6 @@ $(document).ready(function() {
       this.rate_moto_24h = r;
     }
 
-
     var request = $.ajax({
         url : 'https://opendata.paris.fr/api/records/1.0/search/?dataset=parcs-de-stationnement-concedes-de-la-ville-de-paris&rows=1000',
         method : 'GET',
@@ -49,6 +49,8 @@ $(document).ready(function() {
     request.fail(function(error){
         alert("La requête s'est terminée en échec. Infos : " + JSON.stringify(error));
     })
+
+
 
     request.done(function(response){
         for (var i = 0; i < response.records.length; i++){
@@ -90,7 +92,6 @@ $(document).ready(function() {
             map.entities.push(pin)
         };
 
-
         function pushpinClicked(e) {
            if (e.target.metadata) {
 
@@ -105,11 +106,11 @@ $(document).ready(function() {
     })
 
 
+
     function displayInformations(e){
         var loc = e.target.getLocation();
         loc = Object.values(loc);
         loc.splice(2);
-
 
         for(k = 0; k < parkingList.length; k++){
             if(parkingList[k].geo[0] === loc[0] && parkingList[k].geo[1] === loc[1]){
@@ -117,9 +118,7 @@ $(document).ready(function() {
             }
         }
 
-
         var x = 0;
-
         $.each(parkingList[k], function(key, value){
             if(key == 'geo'){
                 return
@@ -131,18 +130,23 @@ $(document).ready(function() {
             }
         });
 
-
-
-        $('#subscribe').click(function(){
+        $('#subscribe').click(function(event){
             $('.table2').css('display', 'inline-table');
             subscriptionTable()
+            event.preventDefault();
+            var hash = this.hash;
+            $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
         });
 
         $('#booking').click(function(){
             $('.table3').css('display', 'inline-table');
             bookingTable()
+            event.preventDefault();
+            var hash = this.hash;
+            $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
         });
     }
+
 
 
     function subscriptionTable(){
@@ -175,6 +179,11 @@ $(document).ready(function() {
 
             if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" || $('.sub_price').html() == ""){
                 $('.sub_confirmation').attr('disabled', '1');
+                if($('.sub_price').html() == "ND €"){
+                    $('.sub_price').html("ND");
+                }else if ($('.sub_price').html() == "undefined €") {
+                    $('.sub_price').html("Indisponible");
+                }
 
             }else {
                 var attr = $('.sub_confirmation').attr('disabled');
@@ -184,6 +193,8 @@ $(document).ready(function() {
             }
         })
     }
+
+
 
 
     function bookingTable(){
@@ -212,6 +223,11 @@ $(document).ready(function() {
 
             if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €" || $('.unit_price').html() == ""){
                 $('.confirmeBooking').attr('disabled', '1');
+                if($('.unit_price').html() == "ND €"){
+                    $('.unit_price').html("ND");
+                }else if ($('.unit_price').html() == "undefined €") {
+                    $('.unit_price').html("Indisponible");
+                }
             }else {
                 var attr = $('.confirmeBooking').attr('disabled');
                 if (typeof attr !== typeof undefined && attr !== false) {

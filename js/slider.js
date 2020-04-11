@@ -18,7 +18,7 @@ nextBtn.addEventListener('click', function(){
     if (counter >= carouselImages.length - 1){
         return;
     }
-    carouselSlide.style.transition = "transform 0.4s ease-in-out";
+    carouselSlide.style.transition = "transform 0.6s ease-in-out";
     counter++;
     carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
 
@@ -28,7 +28,7 @@ prevBtn.addEventListener('click', function(){
     if (counter <= 0){
         return;
     }
-    carouselSlide.style.transition = "transform 0.4s ease-in-out";
+    carouselSlide.style.transition = "transform 0.6s ease-in-out";
     counter--;
     carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
 });
@@ -40,7 +40,7 @@ carouselSlide.addEventListener('transitionend', function(){
         carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
     }
     if (carouselImages[counter].id === 'firstClone'){
-        carouselSlide.style.transition = "none";
+        carouselSlide.style.transition = "transform 1s ease-in-out";
         counter = carouselImages.length - counter;
         carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
     }

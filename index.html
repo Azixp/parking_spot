@@ -9,7 +9,7 @@
     <!--Bootstrap tdemes CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <title></title>
+    <title>Parking Spots</title>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view tde page via file:// -->
     <!--[if lt IE 9]>
@@ -18,107 +18,102 @@
     <![endif]-->
   </head>
   <body>
-
-      <div class="carousel-container">
-          <img src="images/left.png" alt="" id="prevBtn">
-          <img src="images/right.png" alt="" id="nextBtn">
-          <div class="carousel-slide">
-              <img src="images/image5.jpg" id="lastClone" alt="">
-              <img src="images/image1.jpg" alt="">
-              <img src="images/image2.jpg" alt="">
-              <img src="images/image3.jpg" alt="">
-              <img src="images/image4.jpg" alt="">
-              <img src="images/image5.jpg" alt="">
-              <img src="images/image1.jpg" id="firstClone" alt="">
+      <div class="container-fluid">
+          <div class="carousel-container">
+              <img src="images/left.png" alt="" id="prevBtn">
+              <img src="images/right.png" alt="" id="nextBtn">
+              <div class="carousel-slide">
+                  <img src="images/intro.jpg" id="lastClone" alt="">
+                  <img src="images/map.png" style="width:100%; "alt="">
+                  <img src="images/intro.jpg" alt="">
+                  <img src="images/map.png" id="firstClone" alt="">
+              </div>
           </div>
-      </div>
 
-      <div class="container">
-          <div id="myMap"></div>
+              <div id="myMap"></div>
 
-          <table class="table table-striped table-bordered table-hover table1">
-              <tr data-tableau="name">
-                  <th>Nom :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Adresse :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Téléphone :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Horaires :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Accéssibilité Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Accéssibilité Vélo :</th>
-                  <td class="display_info"></td>
-              </tr>
+              <table class="table table-striped table-bordered table-hover table1">
+                  <tr>
+                      <th>Nom :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Adresse :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Téléphone :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Horaires :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Accéssibilité Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Accéssibilité Vélo :</th>
+                      <td class="display_info"></td>
+                  </tr>
 
-              <tr>
-                  <th>Abonnement Mensuel Voiture :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Abonnement Annuel Voiture :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Abonnement Mensuel Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Abonnement Trimestriel Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Abonnement Annuel Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Abonnement Mensuel Vélo :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Tarif 30 minutes Voiture :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Tarif 1 heure Voiture :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Tarif 15 minutes Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Tarif 30 minutes Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
-              <tr>
-                  <th>Tarif 24H Moto :</th>
-                  <td class="display_info"></td>
-              </tr>
+                  <tr>
+                      <th>Abonnement Mensuel Voiture :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Abonnement Annuel Voiture :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Abonnement Mensuel Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Abonnement Trimestriel Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Abonnement Annuel Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Abonnement Mensuel Vélo :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Tarif 30 minutes Voiture :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Tarif 1 heure Voiture :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Tarif 15 minutes Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Tarif 30 minutes Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
+                  <tr>
+                      <th>Tarif 24H Moto :</th>
+                      <td class="display_info"></td>
+                  </tr>
 
-              <tr>
-                  <td>
-                      <button type="button" name="button" id="subscribe" class="btn btn-success btn-sm">S'abonner</button>
-                      <button type="button" name="button" id="booking" class="btn btn-success btn-sm">Réserver à l'unité</button>
-                  </td>
-              </tr>
-          </table>
+                  <tr>
+                      <td>
+                          <a href="#tab2" id="subscribe" class="btn btn-success btn-sm">S'abonner</a>
+                          <a href="#tab3" id="booking" class="btn btn-success btn-sm">Réserver à l'unité</a>
+                      </td>
+                  </tr>
+              </table>
 
 
-
-          <form class="" action="index.html" metdod="post">
-              <table class="table table-striped table-bordered table-hover table2">
+          <form class="" action="index.html" method="post">
+              <table class="table table-striped table-bordered table-hover table2" id="tab2">
                   <tr>
                       <th> <label for="selection">Type/Abonnement:</label> </th>
                       <th>Prix:</th>
@@ -126,7 +121,7 @@
                       <th> <label for="confirmation">Confirmation</label> </th>
                   </tr>
                   <tr>
-                      <td>
+                      <td class="select_row_table2">
                           <select id="subscription_select" name="type_vehicule">
                               <option value="select" selected>Choisir</option>
                               <option value="abo_m_v">Abonnement Mensuel Voiture</option>
@@ -138,16 +133,15 @@
                           </select>
                       </td>
                       <td class="sub_price"></td>
-                      <td> <input type="date" name="" value=""> </td>
-                      <td> <input type="button" class="btn btn-success btn-sm sub_confirmation" name="" value="Confirmer réservation" disabled> </td>
+                      <td class="select_date_table2"> <input type="date" name="date" value=""> </td>
+                      <td class="confirmation_table2"> <input type="button" class="btn btn-success btn-sm sub_confirmation" name="subConfirmation" value="Confirmer réservation" disabled> </td>
                   </tr>
               </table>
           </form>
 
 
-
-          <form class="" action="index.html" metdod="post">
-              <table class="table table-striped table-bordered table-hover table3">
+          <form class="" action="index.html" method="post">
+              <table class="table table-striped table-bordered table-hover table3" id="tab3">
                   <tr>
                       <th> <label for="selection">Type/Tarif:</label> </th>
                       <th>Prix:</th>
@@ -155,7 +149,7 @@
                       <th> <label for="confirmation">Confirmation:</label> </th>
                   </tr>
                   <tr>
-                      <td>
+                      <td class="select_row_table3">
                           <select id="tarif_select" name="type_vehicule">
                               <option value="select" selected>Choisir</option>
                               <option value="rate30m_c">Tarif 30 minutes Voiture</option>
@@ -166,18 +160,17 @@
                           </select>
                       </td>
                       <td class="unit_price"></td>
-                      <td> <input type="date" name="" value=""> </td>
-                      <td> <input type="button" class="btn btn-success btn-sm confirmeBooking" name="" value="Confirmer réservation" disabled> </td>
+                      <td class="select_date_table3"> <input type="date" name="date" value=""> </td>
+                      <td class="confirmation_table3"> <input type="button" class="btn btn-success btn-sm confirmeBooking" name="unitConfirmation" value="Confirmer réservation" disabled> </td>
                   </tr>
               </table>
           </form>
-
       </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="js/script.js"></script>
-    <script type="text/javascript" src="js/slider.js"></script>
-    <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?pushpin=&callback=GetMap&branch=release&setMkt=fr-FR&setLang=fr&key=ApPosPKV1rtvE9V9fpx_YULKyRhck7DFk2YZ2BT6XNNpeACIunUO7lN_m8L0Kp1e' async defer></script>
+    <script src="js/script.js"></script>
+    <script src="js/slider.js"></script>
+    <script src='http://www.bing.com/api/maps/mapcontrol?pushpin=&callback=GetMap&branch=release&setMkt=fr-FR&setLang=fr&key=ApPosPKV1rtvE9V9fpx_YULKyRhck7DFk2YZ2BT6XNNpeACIunUO7lN_m8L0Kp1e' async defer></script>
   </body>
 </html>
