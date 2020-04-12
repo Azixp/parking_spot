@@ -2,16 +2,18 @@
 .carousel-container{
     width: auto;
     margin: auto;
-    /*border: 1px solid black;*/
     overflow: hidden;
     position: relative;
 }
 
 .carousel-slide{
     display: flex;
-    width: 100%;
     height: 500px;
     opacity: 0.7;
+}
+
+.mapImage{
+    width: 100%;
 }
 
 #prevBtn{
@@ -40,7 +42,6 @@
 
 /* BING MAPS */
 #myMap{
-  display: inline-block;
   float: left;
   width: 46%;
   height:672px;
@@ -65,15 +66,15 @@
 }
 
 .display_info{
-    min-width: 550px;
+    width: 550px;
 }
 
 .select_row_table2, .sub_price, .select_date_table2, .confirmation_table2{
-    min-width: 200px;
+    width: 200px;
     text-align: center;
 }
 
 .select_row_table3, .unit_price, .select_date_table3, .confirmation_table3{
-    min-width: 168px;
+    width: 168px;
     text-align: center;
 }

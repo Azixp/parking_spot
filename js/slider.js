@@ -40,8 +40,8 @@ carouselSlide.addEventListener('transitionend', function(){
         carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
     }
     if (carouselImages[counter].id === 'firstClone'){
-        carouselSlide.style.transition = "transform 1s ease-in-out";
-        counter = carouselImages.length - counter;
+        carouselSlide.style.transition = "none";
+        counter = carouselImages.length - counter ;
         carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
     }
 });

@@ -1,5 +1,5 @@
 
-// Bing Maps
+//Fonction Bing Maps permettant d'afficher la map.
 function GetMap()
 {
     var myOptions = {
@@ -17,8 +17,11 @@ function GetMap()
 
 
 $(document).ready(function() {
+
+    //Liste vide dans laquelle sera stockée des objets.
      parkingList = [];
 
+    //Constructeur d'objet : Chaque instance d'objet correspondra à un parking.
     function parkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
       this.geo = a;
       this.name = b;
@@ -40,19 +43,24 @@ $(document).ready(function() {
       this.rate_moto_24h = r;
     }
 
+    //Requète Ajax pour récupérer les données de l'Open Data de Paris.
     var request = $.ajax({
         url : 'https://opendata.paris.fr/api/records/1.0/search/?dataset=parcs-de-stationnement-concedes-de-la-ville-de-paris&rows=1000',
         method : 'GET',
         dataType : 'json',
     })
-
+    //Affichage d'une erreur dans le cas où la requete échoue.
     request.fail(function(error){
         alert("La requête s'est terminée en échec. Infos : " + JSON.stringify(error));
     })
 
 
-
+    //Si requete = succes, cette fonction sera exécutée.
     request.done(function(response){
+        //Itération dans le fichier json.
+        //Une instance d'objet sera créé pour stocker les données récupérées.
+        //Chaque instance d'objet sera elle même stockée dans la liste parkingList[].
+        //Cela permet d'avoir une liste de 150 objet dans laquelle chaque index correpondra à un parking.
         for (var i = 0; i < response.records.length; i++){
          parkingList.push(new parkingSpot(
          response.records[i].fields["geo_point_2d"],
@@ -75,23 +83,25 @@ $(document).ready(function() {
          response.records[i].fields["tf_24h_mot"]
          ));
         }
-
+        //Pour chaque itération dans parkingList[]:
+        //on crée un markeur auquel on assigne une géolocalisation et deux gestionnaires d'événements.
         for (var j = 0; j < parkingList.length; j++){
             center = new Microsoft.Maps.Location(parkingList[j].geo[0],parkingList[j].geo[1]);
             pin = new Microsoft.Maps.Pushpin(center,{
 
                 icon : "images/pin.png",
-                anchor: new Microsoft.Maps.Point(12, 12)
+                anchor: new Microsoft.Maps.Point(12, 5)
             });
             pin.metadata = {
               title: parkingList[j].name,
             };
-
+            //Pour chaque markeur parcouru, la fonction pushpinClicked() sera appelé.
             Microsoft.Maps.Events.addHandler(pin, 'mouseover', pushpinClicked);
+            //Pour chaque markeur cliqué, la fonction displayInformations() sera appelé.
             Microsoft.Maps.Events.addHandler(pin, 'click', displayInformations);
             map.entities.push(pin)
         };
-
+        //pushpinClicked() affiche une infobulle affiche une infobulle au passage de la souris sur un markeur.
         function pushpinClicked(e) {
            if (e.target.metadata) {
 
@@ -106,18 +116,24 @@ $(document).ready(function() {
     })
 
 
-
+    //displayInformations() permet d'afficher les informations d'un parking donné dans un tableau html.
     function displayInformations(e){
+        //On récupère l'évenement dans un objet. Remarque : L'évenement est un objet.
+        //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'api bing maps, getLocation()
         var loc = e.target.getLocation();
-        loc = Object.values(loc);
-        loc.splice(2);
+        loc = Object.values(loc); //On convertit l'objet loc en un tableau.
+        loc.splice(2);  //On enlève les deux dernières valeur du tableau correspondant à "altitude" et "altitudeReference".
 
+        //On recherche la géolocalisation "loc" dans la liste d'objet parkingList[].
+        //Une fois trouvée, on sort de la boucle en gardant la valeur de l'index "k".
+        //La valeur de l'index "k" correpond au parking qui comporte la même géolocalisation que "loc".
         for(k = 0; k < parkingList.length; k++){
             if(parkingList[k].geo[0] === loc[0] && parkingList[k].geo[1] === loc[1]){
                 break;
             }
         }
 
+        //Affichage des informations du parling dans le tableau html
         var x = 0;
         $.each(parkingList[k], function(key, value){
             if(key == 'geo'){
@@ -130,17 +146,23 @@ $(document).ready(function() {
             }
         });
 
+        //Gestionnaire d'évenement :
+        //Si le bouton "s'abonner" est cliqué, un tableau s'affiche et la fonction subscriptionTable() est appelée.
         $('#subscribe').click(function(event){
             $('.table2').css('display', 'inline-table');
             subscriptionTable()
+            // Animation scroll.
             event.preventDefault();
             var hash = this.hash;
             $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
         });
 
+        //Gestionnaire d'évenement :
+        //Si le bouton "réserver à l'unité" est cliqué, un tableau s'affiche et la fonction bookingTable() est appelée.
         $('#booking').click(function(){
             $('.table3').css('display', 'inline-table');
             bookingTable()
+            //Animation scroll
             event.preventDefault();
             var hash = this.hash;
             $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
@@ -148,8 +170,10 @@ $(document).ready(function() {
     }
 
 
-
+    //subscriptionTable() gère le comportement du tableau d'abonnement.
     function subscriptionTable(){
+        //Gestionnaire d'évenement "change" + conditon "switch" pour gérer
+        //l'affichage du prix d'abonnement en fonction d'une option selectionnée par l'utilisateur.
         $('#subscription_select').change(function(){
             var selectedValueAbo = $(this).val();
 
@@ -176,7 +200,8 @@ $(document).ready(function() {
                 $(".sub_price").html("");
             }
 
-
+            //Structure conditionnelle pour gérer les éventuels bug d'affichage et l'activsation/désactivation du bouton "confirmer réservation".
+            //Le bouton sera désactivé si le prix est égal à "ND €", "undefined €" ou "".
             if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" || $('.sub_price').html() == ""){
                 $('.sub_confirmation').attr('disabled', '1');
                 if($('.sub_price').html() == "ND €"){
@@ -196,7 +221,8 @@ $(document).ready(function() {
 
 
 
-
+    //bookingTable() gère le comportement du tableau dédié à la réservation à l'unité.
+    //Code plus ou moins similaire à la fonction subscriptionTable().
     function bookingTable(){
         $('#tarif_select').change(function(){
             var selectedValueUnit = $(this).val();
