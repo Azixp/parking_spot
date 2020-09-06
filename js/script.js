@@ -14,8 +14,6 @@ function GetMap()
     infobox.setMap(map);
 }
 
-
-
 $(document).ready(function() {
 
     //Liste vide dans laquelle sera stockée des objets.
@@ -54,7 +52,6 @@ $(document).ready(function() {
         alert("La requête s'est terminée en échec. Infos : " + JSON.stringify(error));
     })
 
-
     //Si requete = succes, cette fonction sera exécutée.
     request.done(function(response){
         //Itération dans le fichier json.
@@ -83,6 +80,7 @@ $(document).ready(function() {
          response.records[i].fields["tf_24h_mot"]
          ));
         }
+
         //Pour chaque itération dans parkingList[]:
         //on crée un markeur auquel on assigne une géolocalisation et deux gestionnaires d'événements.
         for (var j = 0; j < parkingList.length; j++){
@@ -101,7 +99,7 @@ $(document).ready(function() {
             Microsoft.Maps.Events.addHandler(pin, 'click', displayInformations);
             map.entities.push(pin)
         };
-        //pushpinClicked() affiche une infobulle affiche une infobulle au passage de la souris sur un markeur.
+        //pushpinClicked() affiche une infobulle au passage de la souris sur un markeur.
         function pushpinClicked(e) {
            if (e.target.metadata) {
 
@@ -112,14 +110,12 @@ $(document).ready(function() {
                 });
             }
         };
-
     })
-
 
     //displayInformations() permet d'afficher les informations d'un parking donné dans un tableau html.
     function displayInformations(e){
         //On récupère l'évenement dans un objet. Remarque : L'évenement est un objet.
-        //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'api bing maps, getLocation()
+        //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'API bing maps, getLocation()
         var loc = e.target.getLocation();
         loc = Object.values(loc); //On convertit l'objet loc en un tableau.
         loc.splice(2);  //On enlève les deux dernières valeur du tableau correspondant à "altitude" et "altitudeReference".
@@ -133,7 +129,7 @@ $(document).ready(function() {
             }
         }
 
-        //Affichage des informations du parling dans le tableau html
+        //Affichage des informations du parking dans le tableau html
         var x = 0;
         $.each(parkingList[k], function(key, value){
             if(key == 'geo'){
@@ -168,7 +164,6 @@ $(document).ready(function() {
             $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
         });
     }
-
 
     //subscriptionTable() gère le comportement du tableau d'abonnement.
     function subscriptionTable(){
@@ -219,8 +214,6 @@ $(document).ready(function() {
         })
     }
 
-
-
     //bookingTable() gère le comportement du tableau dédié à la réservation à l'unité.
     //Code plus ou moins similaire à la fonction subscriptionTable().
     function bookingTable(){
@@ -262,5 +255,4 @@ $(document).ready(function() {
             }
         })
     }
-
 });
