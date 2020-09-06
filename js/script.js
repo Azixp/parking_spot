@@ -19,8 +19,8 @@ $(document).ready(function() {
     //Liste vide dans laquelle sera stockée des objets.
      parkingList = [];
 
-    //Constructeur d'objet : Chaque instance d'objet correspondra à un parking.
-    function parkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
+    //Constructeur : Chaque instance d'objet correspondra à un parking.
+    function ParkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
       this.geo = a;
       this.name = b;
       this.address = c;
@@ -59,7 +59,7 @@ $(document).ready(function() {
         //Chaque instance d'objet sera elle même stockée dans la liste parkingList[].
         //Cela permet d'avoir une liste de 150 objet dans laquelle chaque index correpondra à un parking.
         for (var i = 0; i < response.records.length; i++){
-         parkingList.push(new parkingSpot(
+         parkingList.push(new ParkingSpot(
          response.records[i].fields["geo_point_2d"],
          response.records[i].fields["nom_parc"],
          response.records[i].fields["adress_ssc"],
@@ -114,7 +114,7 @@ $(document).ready(function() {
 
     //displayInformations() permet d'afficher les informations d'un parking donné dans un tableau html.
     function displayInformations(e){
-        //On récupère l'évenement dans un objet. Remarque : L'évenement est un objet.
+        //On récupère l'évenement dans un objet.
         //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'API bing maps, getLocation()
         var loc = e.target.getLocation();
         loc = Object.values(loc); //On convertit l'objet loc en un tableau.
