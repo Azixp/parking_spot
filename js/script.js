@@ -89,7 +89,7 @@ $(document).ready(function() {
             center = new Microsoft.Maps.Location(parkingList[j].geo[0],parkingList[j].geo[1]);
             pin = new Microsoft.Maps.Pushpin(center,{
 
-                icon : "images/pin.png",
+                icon : "images/greenpin.svg",
                 anchor: new Microsoft.Maps.Point(12, 5)
             });
             pin.metadata = {
