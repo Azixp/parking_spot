@@ -14,32 +14,176 @@ function GetMap()
     infobox.setMap(map);
 }
 
-$(document).ready(function() {
+//Liste vide dans laquelle sera stockée des objets.
+ parkingList = [];
 
-    //Liste vide dans laquelle sera stockée des objets.
-     parkingList = [];
+//Constructeur : Chaque instance d'objet correspondra à un parking.
+function ParkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
+  this.geo = a;
+  this.name = b;
+  this.address = c;
+  this.contact = d;
+  this.timeTable = e;
+  this.motorBikeAcces = f;
+  this.bikeAcces = g;
+  this.sub_car_month = h;
+  this.sub_car_year = i;
+  this.sub_moto_month = j;
+  this.sub_moto_quart = k;
+  this.sub_moto_year = l;
+  this.sub_bike_month = m;
+  this.rate_car_30m = n;
+  this.rate_car_1h = o;
+  this.rate_moto_15m = p;
+  this.rate_moto_30m = q;
+  this.rate_moto_24h = r;
+}
 
-    //Constructeur : Chaque instance d'objet correspondra à un parking.
-    function ParkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
-      this.geo = a;
-      this.name = b;
-      this.address = c;
-      this.contact = d;
-      this.timeTable = e;
-      this.motorBikeAcces = f;
-      this.bikeAcces = g;
-      this.sub_car_month = h;
-      this.sub_car_year = i;
-      this.sub_moto_month = j;
-      this.sub_moto_quart = k;
-      this.sub_moto_year = l;
-      this.sub_bike_month = m;
-      this.rate_car_30m = n;
-      this.rate_car_1h = o;
-      this.rate_moto_15m = p;
-      this.rate_moto_30m = q;
-      this.rate_moto_24h = r;
+//displayInformations() permet d'afficher les informations d'un parking donné dans un tableau html.
+function displayInformations(e){
+    //On récupère l'évenement dans un objet.
+    //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'API bing maps, getLocation()
+    var loc = e.target.getLocation();
+    loc = Object.values(loc); //On convertit l'objet loc en un tableau.
+    loc.splice(2);  //On enlève les deux dernières valeur du tableau correspondant à "altitude" et "altitudeReference".
+
+    //On recherche la géolocalisation "loc" dans la liste d'objet parkingList[].
+    //Une fois trouvée, on sort de la boucle en gardant la valeur de l'index "k".
+    //La valeur de l'index "k" correpond au parking qui comporte la même géolocalisation que "loc".
+    for(k = 0; k < parkingList.length; k++){
+        if(parkingList[k].geo[0] === loc[0] && parkingList[k].geo[1] === loc[1]){
+            break;
+        }
     }
+
+    //Affichage des informations du parking dans le tableau html
+    var x = 0;
+    $.each(parkingList[k], function(key, value){
+        if(key == 'geo'){
+            return
+        }
+        if(value == undefined){
+            $('.display_info').eq(x++).html("Indisponible");
+        }else{
+            $('.display_info').eq(x++).html(value);
+        }
+    });
+
+    //Gestionnaire d'évenement :
+    //Si le bouton "s'abonner" est cliqué, un tableau s'affiche et la fonction subscriptionTable() est appelée.
+    $('#subscribe').click(function(event){
+        $('.table2').css('display', 'inline-table');
+        subscriptionTable()
+        // Animation scroll.
+        event.preventDefault();
+        var hash = this.hash;
+        $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
+    });
+
+    //Gestionnaire d'évenement :
+    //Si le bouton "réserver à l'unité" est cliqué, un tableau s'affiche et la fonction bookingTable() est appelée.
+    $('#booking').click(function(){
+        $('.table3').css('display', 'inline-table');
+        bookingTable()
+        //Animation scroll
+        event.preventDefault();
+        var hash = this.hash;
+        $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
+    });
+}
+
+//subscriptionTable() gère le comportement du tableau d'abonnement.
+function subscriptionTable(){
+    //Gestionnaire d'évenement "change" + conditon "switch" pour gérer
+    //l'affichage du prix d'abonnement en fonction d'une option selectionnée par l'utilisateur.
+    $('#subscription_select').change(function(){
+        var selectedValueAbo = $(this).val();
+
+        switch (selectedValueAbo) {
+            case 'abo_m_v':
+                $(".sub_price").html(parkingList[k].sub_car_month + " €");
+                break;
+            case 'abo_y_v':
+                $(".sub_price").html(parkingList[k].sub_car_year + " €");
+                break;
+            case 'abo_m_m':
+                $(".sub_price").html(parkingList[k].sub_moto_month + " €");
+                break;
+            case 'abo_t_m':
+                $(".sub_price").html(parkingList[k].sub_moto_quart + " €");
+                break;
+            case 'abo_a_m':
+                $(".sub_price").html(parkingList[k].sub_moto_year + " €");
+                break;
+            case 'abo_m_velo':
+                $(".sub_price").html(parkingList[k].sub_bike_month + " €");
+                break;
+            default:
+            $(".sub_price").html("");
+        }
+
+        //Structure conditionnelle pour gérer les éventuels bug d'affichage et l'activsation/désactivation du bouton "confirmer réservation".
+        //Le bouton sera désactivé si le prix est égal à "ND €", "undefined €" ou "".
+        if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" || $('.sub_price').html() == ""){
+            $('.sub_confirmation').attr('disabled', '1');
+            if($('.sub_price').html() == "ND €"){
+                $('.sub_price').html("ND");
+            }else if ($('.sub_price').html() == "undefined €") {
+                $('.sub_price').html("Indisponible");
+            }
+
+        }else {
+            var attr = $('.sub_confirmation').attr('disabled');
+            if (typeof attr !== typeof undefined && attr !== false) {
+            $('.sub_confirmation').removeAttr('disabled');
+            }
+        }
+    })
+}
+
+//bookingTable() gère le comportement du tableau dédié à la réservation à l'unité.
+//Code plus ou moins similaire à la fonction subscriptionTable().
+function bookingTable(){
+    $('#tarif_select').change(function(){
+        var selectedValueUnit = $(this).val();
+
+        switch (selectedValueUnit) {
+            case 'rate30m_c':
+                $(".unit_price").html(parkingList[k].rate_car_30m + " €");
+                break;
+            case 'rate1h_c':
+                $(".unit_price").html(parkingList[k].rate_car_1h + " €");
+                break;
+            case 'rate15m_m':
+                $(".unit_price").html(parkingList[k].rate_moto_15m + " €");
+                break;
+            case 'rate30m_m':
+                $(".unit_price").html(parkingList[k].rate_moto_30m + " €");
+                break;
+            case 'rate24h_m':
+                $(".unit_price").html(parkingList[k].rate_moto_24h + " €");
+                break;
+            default:
+            $(".unit_price").html("");
+        };
+
+        if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €" || $('.unit_price').html() == ""){
+            $('.confirmeBooking').attr('disabled', '1');
+            if($('.unit_price').html() == "ND €"){
+                $('.unit_price').html("ND");
+            }else if ($('.unit_price').html() == "undefined €") {
+                $('.unit_price').html("Indisponible");
+            }
+        }else {
+            var attr = $('.confirmeBooking').attr('disabled');
+            if (typeof attr !== typeof undefined && attr !== false) {
+            $('.confirmeBooking').removeAttr('disabled');
+            }
+        }
+    })
+}
+
+$(document).ready(function() {
 
     //Requète Ajax pour récupérer les données de l'Open Data de Paris.
     var request = $.ajax({
@@ -111,148 +255,4 @@ $(document).ready(function() {
             }
         };
     })
-
-    //displayInformations() permet d'afficher les informations d'un parking donné dans un tableau html.
-    function displayInformations(e){
-        //On récupère l'évenement dans un objet.
-        //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'API bing maps, getLocation()
-        var loc = e.target.getLocation();
-        loc = Object.values(loc); //On convertit l'objet loc en un tableau.
-        loc.splice(2);  //On enlève les deux dernières valeur du tableau correspondant à "altitude" et "altitudeReference".
-
-        //On recherche la géolocalisation "loc" dans la liste d'objet parkingList[].
-        //Une fois trouvée, on sort de la boucle en gardant la valeur de l'index "k".
-        //La valeur de l'index "k" correpond au parking qui comporte la même géolocalisation que "loc".
-        for(k = 0; k < parkingList.length; k++){
-            if(parkingList[k].geo[0] === loc[0] && parkingList[k].geo[1] === loc[1]){
-                break;
-            }
-        }
-
-        //Affichage des informations du parking dans le tableau html
-        var x = 0;
-        $.each(parkingList[k], function(key, value){
-            if(key == 'geo'){
-                return
-            }
-            if(value == undefined){
-                $('.display_info').eq(x++).html("Indisponible");
-            }else{
-                $('.display_info').eq(x++).html(value);
-            }
-        });
-
-        //Gestionnaire d'évenement :
-        //Si le bouton "s'abonner" est cliqué, un tableau s'affiche et la fonction subscriptionTable() est appelée.
-        $('#subscribe').click(function(event){
-            $('.table2').css('display', 'inline-table');
-            subscriptionTable()
-            // Animation scroll.
-            event.preventDefault();
-            var hash = this.hash;
-            $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
-        });
-
-        //Gestionnaire d'évenement :
-        //Si le bouton "réserver à l'unité" est cliqué, un tableau s'affiche et la fonction bookingTable() est appelée.
-        $('#booking').click(function(){
-            $('.table3').css('display', 'inline-table');
-            bookingTable()
-            //Animation scroll
-            event.preventDefault();
-            var hash = this.hash;
-            $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
-        });
-    }
-
-    //subscriptionTable() gère le comportement du tableau d'abonnement.
-    function subscriptionTable(){
-        //Gestionnaire d'évenement "change" + conditon "switch" pour gérer
-        //l'affichage du prix d'abonnement en fonction d'une option selectionnée par l'utilisateur.
-        $('#subscription_select').change(function(){
-            var selectedValueAbo = $(this).val();
-
-            switch (selectedValueAbo) {
-                case 'abo_m_v':
-                    $(".sub_price").html(parkingList[k].sub_car_month + " €");
-                    break;
-                case 'abo_y_v':
-                    $(".sub_price").html(parkingList[k].sub_car_year + " €");
-                    break;
-                case 'abo_m_m':
-                    $(".sub_price").html(parkingList[k].sub_moto_month + " €");
-                    break;
-                case 'abo_t_m':
-                    $(".sub_price").html(parkingList[k].sub_moto_quart + " €");
-                    break;
-                case 'abo_a_m':
-                    $(".sub_price").html(parkingList[k].sub_moto_year + " €");
-                    break;
-                case 'abo_m_velo':
-                    $(".sub_price").html(parkingList[k].sub_bike_month + " €");
-                    break;
-                default:
-                $(".sub_price").html("");
-            }
-
-            //Structure conditionnelle pour gérer les éventuels bug d'affichage et l'activsation/désactivation du bouton "confirmer réservation".
-            //Le bouton sera désactivé si le prix est égal à "ND €", "undefined €" ou "".
-            if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" || $('.sub_price').html() == ""){
-                $('.sub_confirmation').attr('disabled', '1');
-                if($('.sub_price').html() == "ND €"){
-                    $('.sub_price').html("ND");
-                }else if ($('.sub_price').html() == "undefined €") {
-                    $('.sub_price').html("Indisponible");
-                }
-
-            }else {
-                var attr = $('.sub_confirmation').attr('disabled');
-                if (typeof attr !== typeof undefined && attr !== false) {
-                $('.sub_confirmation').removeAttr('disabled');
-                }
-            }
-        })
-    }
-
-    //bookingTable() gère le comportement du tableau dédié à la réservation à l'unité.
-    //Code plus ou moins similaire à la fonction subscriptionTable().
-    function bookingTable(){
-        $('#tarif_select').change(function(){
-            var selectedValueUnit = $(this).val();
-
-            switch (selectedValueUnit) {
-                case 'rate30m_c':
-                    $(".unit_price").html(parkingList[k].rate_car_30m + " €");
-                    break;
-                case 'rate1h_c':
-                    $(".unit_price").html(parkingList[k].rate_car_1h + " €");
-                    break;
-                case 'rate15m_m':
-                    $(".unit_price").html(parkingList[k].rate_moto_15m + " €");
-                    break;
-                case 'rate30m_m':
-                    $(".unit_price").html(parkingList[k].rate_moto_30m + " €");
-                    break;
-                case 'rate24h_m':
-                    $(".unit_price").html(parkingList[k].rate_moto_24h + " €");
-                    break;
-                default:
-                $(".unit_price").html("");
-            };
-
-            if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €" || $('.unit_price').html() == ""){
-                $('.confirmeBooking').attr('disabled', '1');
-                if($('.unit_price').html() == "ND €"){
-                    $('.unit_price').html("ND");
-                }else if ($('.unit_price').html() == "undefined €") {
-                    $('.unit_price').html("Indisponible");
-                }
-            }else {
-                var attr = $('.confirmeBooking').attr('disabled');
-                if (typeof attr !== typeof undefined && attr !== false) {
-                $('.confirmeBooking').removeAttr('disabled');
-                }
-            }
-        })
-    }
 });
