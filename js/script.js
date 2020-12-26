@@ -1,258 +1,324 @@
+let data = null
+let actualIndex = null;
 
-//Fonction Bing Maps permettant d'afficher la map.
-function GetMap()
-{
-    var myOptions = {
-        credentials: 'ApPosPKV1rtvE9V9fpx_YULKyRhck7DFk2YZ2BT6XNNpeACIunUO7lN_m8L0Kp1e',
-        center: new Microsoft.Maps.Location(48.8534, 2.3488),
-        zoom: 12
-    }
-    map = new Microsoft.Maps.Map('#myMap', myOptions);
-    infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
-        visible: false
-    });
-    infobox.setMap(map);
+function getOpenData(){
+    let xhrRequest = new XMLHttpRequest();
+    let isDataReady = false;
+    xhrRequest.open(
+        'GET',
+        'https://opendata.paris.fr/api/records/1.0/search/?dataset=parcs-de-stationnement-concedes-de-la-ville-de-paris&rows=1000',
+        true
+    );
+    xhrRequest.responseType = 'json';
+    xhrRequest.send();
+    return xhrRequest;
 }
 
-//Liste vide dans laquelle sera stockée des objets.
- parkingList = [];
-
-//Constructeur : Chaque instance d'objet correspondra à un parking.
-function ParkingSpot(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r){
-  this.geo = a;
-  this.name = b;
-  this.address = c;
-  this.contact = d;
-  this.timeTable = e;
-  this.motorBikeAcces = f;
-  this.bikeAcces = g;
-  this.sub_car_month = h;
-  this.sub_car_year = i;
-  this.sub_moto_month = j;
-  this.sub_moto_quart = k;
-  this.sub_moto_year = l;
-  this.sub_bike_month = m;
-  this.rate_car_30m = n;
-  this.rate_car_1h = o;
-  this.rate_moto_15m = p;
-  this.rate_moto_30m = q;
-  this.rate_moto_24h = r;
-}
-
-//displayInformations() permet d'afficher les informations d'un parking donné dans un tableau html.
-function displayInformations(e){
-    //On récupère l'évenement dans un objet.
-    //On récupère la latitude et la longitude du markeur cliqué grâce à la méthode de l'API bing maps, getLocation()
-    var loc = e.target.getLocation();
-    loc = Object.values(loc); //On convertit l'objet loc en un tableau.
-    loc.splice(2);  //On enlève les deux dernières valeur du tableau correspondant à "altitude" et "altitudeReference".
-
-    //On recherche la géolocalisation "loc" dans la liste d'objet parkingList[].
-    //Une fois trouvée, on sort de la boucle en gardant la valeur de l'index "k".
-    //La valeur de l'index "k" correpond au parking qui comporte la même géolocalisation que "loc".
-    for(k = 0; k < parkingList.length; k++){
-        if(parkingList[k].geo[0] === loc[0] && parkingList[k].geo[1] === loc[1]){
+function updateParkingIndex(actualLocation){
+    let i = 0;
+    while (i < data.length) {
+        if((actualLocation.latitude == data[i].fields['geo_point_2d'][0]) && actualLocation.longitude === data[i].fields['geo_point_2d'][1]){
             break;
         }
+        i++;
     }
+    actualIndex = i;
+}
 
-    //Affichage des informations du parking dans le tableau html
-    var x = 0;
-    $.each(parkingList[k], function(key, value){
-        if(key == 'geo'){
-            return
-        }
-        if(value == undefined){
-            $('.display_info').eq(x++).html("Indisponible");
-        }else{
-            $('.display_info').eq(x++).html(value);
-        }
+let infoboxTemplate = `<div class="customInfobox">
+                            <a class="close-infoBox" href="#">X</a>
+                            <h4>{title}</h4><hr>
+                            {description}
+                            <div>
+                                <ul>
+                                    <li><a href="#" class="btn btn-success btn-sm" id="sub">S'abonner</a></li>
+                                    <li><a href="#" class="btn btn-success btn-sm" id="book">Réserver</a></li>
+                                </ul>
+                            </div>
+                        </div>`;
+
+let subFormTemplate = `<form action="" method="" id="subForm" data-aos="fade-right">
+                        <table class="table table-striped table-bordered table-hover">
+                            <tr>
+                                <th> <label for="selection">Type/Abonnement:</label> </th>
+                                <th>Prix:</th>
+                                <th>Date:</th>
+                                <th> <label for="confirmation">Confirmation</label> </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select name="type_sub">
+                                        <option value="" selected>Choisir</option>
+                                        <option value="ab_1m_e">Abonnement Mensuel Voiture</option>
+                                        <option value="ab_1a_e">Abonnement Annuel Voiture</option>
+                                        <option value="abmoto_1me">Abonnement Mensuel Moto</option>
+                                        <option value="abmoto_1te">Abonnement Trimestriel Moto</option>
+                                        <option value="abmoto_1ae">Abonnement Annuel Moto</option>
+                                        <option value="tvelo_1m_e">Abonnement Mensuel Vélo</option>
+                                    </select>
+                                </td>
+                                <td class="price"></td>
+                                <td> <input type="date" name="date" value=""> </td>
+                                <td> <input type="button" class="btn btn-success btn-sm confirmation" name="subConfirmation" value="Confirmer réservation"> </td>
+                            </tr>
+                        </table>
+                        </form>`;
+
+let bookFormTemplate = `<form action="index.html" method="post" id="bookForm" data-aos="fade-right">
+                            <table class="table table-striped table-bordered table-hover">
+                                <tr>
+                                    <th> <label for="selection">Type/Tarif:</label> </th>
+                                    <th>Prix:</th>
+                                    <th>Date:</th>
+                                    <th> <label for="confirmation">Confirmation:</label> </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select name="type_book">
+                                            <option value="" selected>Choisir</option>
+                                            <option value="tf_30mn_e">Tarif 30 minutes Voiture</option>
+                                            <option value="tf_1h_e">Tarif 1 heure Voiture</option>
+                                            <option value="tf_15mn_mo">Tarif 15 minutes Moto</option>
+                                            <option value="tf_30mn_mo">Tarif 30 minutes Moto</option>
+                                            <option value="tf_24h_mot">Tarif 24H Moto</option>
+                                        </select>
+                                    </td>
+                                    <td class="price"></td>
+                                    <td> <input type="date" name="date" value=""> </td>
+                                    <td> <input type="button" class="btn btn-success btn-sm confirmation" name="bookConfirmation" value="Confirmer réservation"> </td>
+                                </tr>
+                            </table>
+                        </form>`;
+function createTable(){
+    let htmlElement = `<section class="tab_section hide">
+                        <table class="table table-condensed table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>ADRESSE</th>
+                                <th>TEL</th>
+                                <th>HORAIRES</th>
+                                <th>ACCES MOTO</th>
+                                <th>ACCES VELO</th>
+                                <th>ABO MENS VOITURE</th>
+                                <th>ABO ANU VOITURE</th>
+                                <th>ABO MENS MOTO</th>
+                                <th>ABO TRIM MOTO</th>
+                                <th>ABO ANU MOTO</th>
+                                <th>ABO MENS VELO</th>
+                                <th>30 MINUTES VOITURE</th>
+                                <th>1 HEURE VOITURE</th>
+                                <th>15 MINUTES MOTO</th>
+                                <th>30 MINUTES MOTO</th>
+                                <th>24 HEURES MOTO</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                        for (let i = 0; i < data.length; i++) {
+                            htmlElement += `<tr>
+                                                <td>${data[i].fields['adress_ssc']}</td>
+                                                <td>${data[i].fields['tel']}</td>
+                                                <td>${data[i].fields['horaire_na']}</td>
+                                                <td>${data[i].fields['acces_moto']}</td>
+                                                <td>${data[i].fields['acces_velo']}</td>
+                                                <td>${data[i].fields['ab_1m_e']}</td>
+                                                <td>${data[i].fields['ab_1a_e']}</td>
+                                                <td>${data[i].fields['abmoto_1me']}</td>
+                                                <td>${data[i].fields['abmoto_1te']}</td>
+                                                <td>${data[i].fields['abmoto_1ae']}</td>
+                                                <td>${data[i].fields['tvelo_1m_e']}</td>
+                                                <td>${data[i].fields['tf_30mn_e']}</td>
+                                                <td>${data[i].fields['tf_1h_e']}</td>
+                                                <td>${data[i].fields['tf_15mn_mo']}</td>
+                                                <td>${data[i].fields['tf_30mn_mo']}</td>
+                                                <td>${data[i].fields['tf_24h_mot']}</td>
+                                            </tr>`;   
+                        }
+        htmlElement += `</tbody>
+                        </table>
+                        </section>
+                        `;
+    return htmlElement;                                   
+}
+
+function getDescriptionTemplate(parkInfo){
+    let template = `<dl>
+                        <dt>ADRESSE</dt>
+                            <dd>${parkInfo['adress_ssc']}</dd>
+                        <dt>TEL</dt>
+                            <dd>${parkInfo['tel']}</dd>
+                        <dt>HORAIRES</dt>
+                            <dd>${parkInfo['horaire_na']}</dd>
+                        <dt>ACCES MOTO</dt>
+                            <dd>${parkInfo['acces_moto']}</dd>
+                        <dt>ACCES VELO</dt>
+                            <dd>${parkInfo['acces_velo']}</dd>
+                        <dt>ABO MENS VOITURE</dt>
+                            <dd>${parkInfo['ab_1m_e']}</dd>
+                        <dt>ABO ANU VOITURE</dt>
+                            <dd>${parkInfo['ab_1a_e']}</dd>
+                        <dt>ABO MENS MOTO</dt>
+                            <dd>${parkInfo['abmoto_1me']}</dd>
+                        <dt>ABO TRIM MOTO</dt>
+                            <dd>${parkInfo['abmoto_1te']}</dd>
+                        <dt>ABO ANU MOTO</dt>
+                            <dd>${parkInfo['abmoto_1ae']}</dd>
+                        <dt>ABO MENS VELO</dt>
+                            <dd>${parkInfo['tvelo_1m_e']}</dd>
+                        <dt>30 MINUTES VOITURE</dt>
+                            <dd>${parkInfo['tf_30mn_e']}</dd>
+                        <dt>1 HEURE VOITURE</dt>
+                            <dd>${parkInfo['tf_1h_e']}</dd>
+                        <dt>15 MINUTES MOTO</dt>
+                            <dd>${parkInfo['tf_15mn_mo']}</dd>
+                        <dt>30 MINUTES MOTO</dt>
+                            <dd>${parkInfo['tf_30mn_mo']}</dd>
+                        <dt>24 HEURES MOTO</dt>
+                            <dd>${parkInfo['tf_24h_mot']}</dd>  
+                    </dl>`;
+    return template; 
+}
+
+function GetMap(){
+    var map = new Microsoft.Maps.Map('#myMap', {
+        center: new Microsoft.Maps.Location(48.8534, 2.3488),
+        zoom: 12
+    });
+   
+    //Create an infobox at the center of the map without showing it.
+    infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+        visible: false,
     });
 
-    //Gestionnaire d'évenement :
-    //Si le bouton "s'abonner" est cliqué, un tableau s'affiche et la fonction subscriptionTable() est appelée.
-    $('#subscribe').click(function(event){
-        $('.table2').css('display', 'inline-table');
-        subscriptionTable()
-        // Animation scroll.
-        event.preventDefault();
-        var hash = this.hash;
-        $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
-    });
+    //Assign the infobox to a map instance.
+    infobox.setMap(map);
 
-    //Gestionnaire d'évenement :
-    //Si le bouton "réserver à l'unité" est cliqué, un tableau s'affiche et la fonction bookingTable() est appelée.
-    $('#booking').click(function(){
-        $('.table3').css('display', 'inline-table');
-        bookingTable()
-        //Animation scroll
-        event.preventDefault();
-        var hash = this.hash;
-        $('body,html').animate({scrollTop: $(hash).offset().top} , 900 , function(){window.location.hash = hash;})
+    let request = getOpenData();
+    
+    request.onreadystatechange = function(){
+        console.log('STATE => ', request.readyState)
+        if (this.readyState === 4){
+            if(this.status === 200){
+                data = this.response.records;
+                for (let i = 0; i < data.length; i++) {
+                    let parkingLocations = new Microsoft.Maps.Location(data[i].fields['geo_point_2d'][0], data[i].fields['geo_point_2d'][1]);
+                    let pin = new Microsoft.Maps.Pushpin(parkingLocations, {
+                        icon : "images/greenpin.svg",
+                        anchor: new Microsoft.Maps.Point(12, 5)
+                    })
+                    pin.metadata = {
+                        title: data[i].fields['nom_parc'],
+                        description : getDescriptionTemplate(data[i].fields)
+                    }
+                    //Add a click event handler to the pushpin.
+                    Microsoft.Maps.Events.addHandler(pin, 'click', pushpinClicked);
+                    //Microsoft.Maps.Events.addHandler(pin, 'click', testFonction);
+
+                    //Add pushpin to the map.
+                    map.entities.push(pin);
+                }       
+            } else {
+                console.log("Un problème est survenu au cours de la requête.");
+            }
+        }
+    }
+}
+
+function pushpinClicked(e){
+    //Make sure the infobox has metadata to display.
+    console.log(e.target.metadata)
+    if (e.target.metadata) {
+        //Set the infobox options with the metadata of the pushpin.
+        infobox.setOptions({
+            location: e.target.getLocation(),
+            visible: true,
+            htmlContent: infoboxTemplate.replace('{title}', e.target.metadata.title).replace('{description}', e.target.metadata.description),
+        });
+    }
+    closeInfoBoxHandler();
+    subFormHandler();
+    bookFormHandler();
+    updateParkingIndex(e.target.getLocation())
+}
+
+function closeInfoBoxHandler(){
+    document.querySelector('.customInfobox .close-infoBox').addEventListener('click', function(e){
+        e.preventDefault();
+        document.querySelector('.customInfobox').remove();
+    })
+}
+
+function subFormHandler(){
+    document.querySelector('#sub').addEventListener('click', function(e){
+        e.preventDefault();
+        if(document.querySelector('#subForm') === null){
+            if(document.querySelector('#bookForm')){
+                document.querySelector('#bookForm').remove();
+                document.querySelector('.subFormContainer').innerHTML = subFormTemplate;
+            } else {
+                document.querySelector('.subFormContainer').innerHTML = subFormTemplate;
+            }
+            injectData(document.querySelector('#subForm'));
+        }
     });
 }
 
-//subscriptionTable() gère le comportement du tableau d'abonnement.
-function subscriptionTable(){
-    //Gestionnaire d'évenement "change" + conditon "switch" pour gérer
-    //l'affichage du prix d'abonnement en fonction d'une option selectionnée par l'utilisateur.
-    $('#subscription_select').change(function(){
-        var selectedValueAbo = $(this).val();
-
-        switch (selectedValueAbo) {
-            case 'abo_m_v':
-                $(".sub_price").html(parkingList[k].sub_car_month + " €");
-                break;
-            case 'abo_y_v':
-                $(".sub_price").html(parkingList[k].sub_car_year + " €");
-                break;
-            case 'abo_m_m':
-                $(".sub_price").html(parkingList[k].sub_moto_month + " €");
-                break;
-            case 'abo_t_m':
-                $(".sub_price").html(parkingList[k].sub_moto_quart + " €");
-                break;
-            case 'abo_a_m':
-                $(".sub_price").html(parkingList[k].sub_moto_year + " €");
-                break;
-            case 'abo_m_velo':
-                $(".sub_price").html(parkingList[k].sub_bike_month + " €");
-                break;
-            default:
-            $(".sub_price").html("");
-        }
-
-        //Structure conditionnelle pour gérer les éventuels bug d'affichage et l'activsation/désactivation du bouton "confirmer réservation".
-        //Le bouton sera désactivé si le prix est égal à "ND €", "undefined €" ou "".
-        if ($('.sub_price').html() == "ND €" || $('.sub_price').html() == "undefined €" || $('.sub_price').html() == ""){
-            $('.sub_confirmation').attr('disabled', '1');
-            if($('.sub_price').html() == "ND €"){
-                $('.sub_price').html("ND");
-            }else if ($('.sub_price').html() == "undefined €") {
-                $('.sub_price').html("Indisponible");
+function bookFormHandler(){
+    document.querySelector('#book').addEventListener('click', function(e){
+        e.preventDefault()
+        if(document.querySelector('#bookForm') === null){
+            if(document.querySelector('#subForm')){
+                document.querySelector('#subForm').remove();
+                document.querySelector('.bookFormContainer').innerHTML = bookFormTemplate;
+            } else {
+                document.querySelector('.bookFormContainer').innerHTML = bookFormTemplate;
             }
-
-        }else {
-            var attr = $('.sub_confirmation').attr('disabled');
-            if (typeof attr !== typeof undefined && attr !== false) {
-            $('.sub_confirmation').removeAttr('disabled');
-            }
+            injectData(document.querySelector('#bookForm'));
         }
     })
 }
 
-//bookingTable() gère le comportement du tableau dédié à la réservation à l'unité.
-//Code plus ou moins similaire à la fonction subscriptionTable().
-function bookingTable(){
-    $('#tarif_select').change(function(){
-        var selectedValueUnit = $(this).val();
-
-        switch (selectedValueUnit) {
-            case 'rate30m_c':
-                $(".unit_price").html(parkingList[k].rate_car_30m + " €");
-                break;
-            case 'rate1h_c':
-                $(".unit_price").html(parkingList[k].rate_car_1h + " €");
-                break;
-            case 'rate15m_m':
-                $(".unit_price").html(parkingList[k].rate_moto_15m + " €");
-                break;
-            case 'rate30m_m':
-                $(".unit_price").html(parkingList[k].rate_moto_30m + " €");
-                break;
-            case 'rate24h_m':
-                $(".unit_price").html(parkingList[k].rate_moto_24h + " €");
-                break;
-            default:
-            $(".unit_price").html("");
-        };
-
-        if ($('.unit_price').html() == "ND €" || $('.unit_price').html() == "undefined €" || $('.unit_price').html() == ""){
-            $('.confirmeBooking').attr('disabled', '1');
-            if($('.unit_price').html() == "ND €"){
-                $('.unit_price').html("ND");
-            }else if ($('.unit_price').html() == "undefined €") {
-                $('.unit_price').html("Indisponible");
-            }
-        }else {
-            var attr = $('.confirmeBooking').attr('disabled');
-            if (typeof attr !== typeof undefined && attr !== false) {
-            $('.confirmeBooking').removeAttr('disabled');
-            }
-        }
+function switchPageHandler(){
+    document.querySelector('header nav ul').addEventListener('click', function(event){
+       if(event.target.tagName === 'A'){
+           if(event.target.innerHTML === 'TABLEAU'){
+               document.querySelector('.map_section').classList.add('hide');
+               document.querySelector('.tab_section').classList.remove('hide');
+           } else if (event.target.innerHTML === 'CARTE'){
+               document.querySelector('.map_section').classList.remove('hide');
+               document.querySelector('.tab_section').classList.add('hide'); 
+           }
+       }
     })
 }
 
-$(document).ready(function() {
+function injectData(htmlElement){
+    htmlElement.querySelector('select').addEventListener('change',function(){
+        let subInfo = data[actualIndex].fields[this.value];
 
-    //Requète Ajax pour récupérer les données de l'Open Data de Paris.
-    var request = $.ajax({
-        url : 'https://opendata.paris.fr/api/records/1.0/search/?dataset=parcs-de-stationnement-concedes-de-la-ville-de-paris&rows=1000',
-        method : 'GET',
-        dataType : 'json',
-    })
-    //Affichage d'une erreur dans le cas où la requete échoue.
-    request.fail(function(error){
-        alert("La requête s'est terminée en échec. Infos : " + JSON.stringify(error));
-    })
-
-    //Si requete = succes, cette fonction sera exécutée.
-    request.done(function(response){
-        //Itération dans le fichier json.
-        //Une instance d'objet sera créé pour stocker les données récupérées.
-        //Chaque instance d'objet sera elle même stockée dans la liste parkingList[].
-        //Cela permet d'avoir une liste de 150 objet dans laquelle chaque index correpondra à un parking.
-        for (var i = 0; i < response.records.length; i++){
-         parkingList.push(new ParkingSpot(
-         response.records[i].fields["geo_point_2d"],
-         response.records[i].fields["nom_parc"],
-         response.records[i].fields["adress_ssc"],
-         response.records[i].fields["tel"],
-         response.records[i].fields["horaire_na"],
-         response.records[i].fields["acces_moto"],
-         response.records[i].fields["acces_velo"],
-         response.records[i].fields["ab_1m_e"],
-         response.records[i].fields["ab_1a_e"],
-         response.records[i].fields["abmoto_1me"],
-         response.records[i].fields["abmoto_1te"],
-         response.records[i].fields["abmoto_1ae"],
-         response.records[i].fields["tvelo_1m_e"],
-         response.records[i].fields["tf_30mn_e"],
-         response.records[i].fields["tf_1h_e"],
-         response.records[i].fields["tf_15mn_mo"],
-         response.records[i].fields["tf_30mn_mo"],
-         response.records[i].fields["tf_24h_mot"]
-         ));
+        if(subInfo == null){
+            htmlElement.querySelector('.price').innerHTML = 'Non disponible';
+            htmlElement.querySelector('input[type="button"]').setAttribute('disabled', '1');
+        } else if(subInfo === 'ND'){
+            htmlElement.querySelector('.price').innerHTML = 'Non disponible';
+            htmlElement.querySelector('input[type="button"]').setAttribute('disabled', '1');
+        } else {
+            htmlElement.querySelector('.price').innerHTML = subInfo + ' €';
+            htmlElement.querySelector('input[type="button"]').removeAttribute('disabled');
         }
 
-        //Pour chaque itération dans parkingList[]:
-        //on crée un markeur auquel on assigne une géolocalisation et deux gestionnaires d'événements.
-        for (var j = 0; j < parkingList.length; j++){
-            center = new Microsoft.Maps.Location(parkingList[j].geo[0],parkingList[j].geo[1]);
-            pin = new Microsoft.Maps.Pushpin(center,{
-
-                icon : "images/greenpin.svg",
-                anchor: new Microsoft.Maps.Point(12, 5)
-            });
-            pin.metadata = {
-              title: parkingList[j].name,
-            };
-            //Pour chaque markeur parcouru, la fonction pushpinClicked() sera appelé.
-            Microsoft.Maps.Events.addHandler(pin, 'mouseover', pushpinClicked);
-            //Pour chaque markeur cliqué, la fonction displayInformations() sera appelé.
-            Microsoft.Maps.Events.addHandler(pin, 'click', displayInformations);
-            map.entities.push(pin)
-        };
-        //pushpinClicked() affiche une infobulle au passage de la souris sur un markeur.
-        function pushpinClicked(e) {
-           if (e.target.metadata) {
-
-            infobox.setOptions({
-                location: e.target.getLocation(),
-                title: e.target.metadata.title,
-                visible: true,
-                });
-            }
-        };
     })
-});
+}
+
+function generateTable(){
+    setTimeout(function(){ 
+        if(data){
+            let table = createTable();
+            document.querySelector('.custom_container .tabContainer').innerHTML += table
+        }
+    }, 3000);
+}
+
+window.addEventListener('load', function(){
+    generateTable();
+    switchPageHandler() 
+})
