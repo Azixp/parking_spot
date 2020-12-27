@@ -211,7 +211,6 @@ function GetMap(){
                     }
                     //Add a click event handler to the pushpin.
                     Microsoft.Maps.Events.addHandler(pin, 'click', pushpinClicked);
-                    //Microsoft.Maps.Events.addHandler(pin, 'click', testFonction);
 
                     //Add pushpin to the map.
                     map.entities.push(pin);
