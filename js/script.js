@@ -1,4 +1,6 @@
+//opendata
 let data = null
+//index du parking
 let actualIndex = null;
 
 function getOpenData(){
@@ -6,7 +8,7 @@ function getOpenData(){
     let isDataReady = false;
     xhrRequest.open(
         'GET',
-        'https://opendata.paris.fr/api/records/1.0/search/?dataset=parcs-de-stationnement-concedes-de-la-ville-de-paris&rows=1000',
+        'https://opendata.paris.fr/api/records/1.0/search/?dataset=stationnement-en-ouvrage&q=&rows=1000',
         true
     );
     xhrRequest.responseType = 'json';
@@ -49,8 +51,13 @@ let subFormTemplate = `<form action="" method="" id="subForm" data-aos="fade-rig
                                 <td>
                                     <select name="type_sub">
                                         <option value="" selected>Choisir</option>
-                                        <option value="ab_1m_e">Abonnement Mensuel Voiture</option>
-                                        <option value="ab_1a_e">Abonnement Annuel Voiture</option>
+                                        <option value="ab_1m_e">Abonnement Mensuel VL</option>
+                                        <option value="ab_1a_e">Abonnement Annuel VL</option>
+                                        <option value="abpmr_1a_e">Abonnement PMR Annuel</option>
+                                        <option value="abpmr_1t_e">Abonnement PMR Trimestriel</option>
+                                        <option value="abve_1m_e">Abonnement Vehicule E Mensuel</option>
+                                        <option value="abve_1t_e">Abonnement Vehicule E Trimestriel</option>
+                                        <option value="abve_1a_e">Abonnement Vehicule E Annuel</option>
                                         <option value="abmoto_1me">Abonnement Mensuel Moto</option>
                                         <option value="abmoto_1te">Abonnement Trimestriel Moto</option>
                                         <option value="abmoto_1ae">Abonnement Annuel Moto</option>
@@ -77,7 +84,10 @@ let bookFormTemplate = `<form action="index.html" method="post" id="bookForm" da
                                         <select name="type_book">
                                             <option value="" selected>Choisir</option>
                                             <option value="tf_30mn_e">Tarif 30 minutes Voiture</option>
-                                            <option value="tf_1h_e">Tarif 1 heure Voiture</option>
+                                            <option value="tarif_1h">Tarif 1 heure</option>
+                                            <option value="tarif_2h">Tarif 2 heures</option>
+                                            <option value="tarif_3h">Tarif 3 heures</option>
+                                            <option value="tarif_24h">Tarif 24 heures</option>
                                             <option value="tf_15mn_mo">Tarif 15 minutes Moto</option>
                                             <option value="tf_30mn_mo">Tarif 30 minutes Moto</option>
                                             <option value="tf_24h_mot">Tarif 24H Moto</option>
@@ -115,19 +125,24 @@ function createTable(){
                         <tbody>`;
                         for (let i = 0; i < data.length; i++) {
                             htmlElement += `<tr>
-                                                <td>${data[i].fields['adress_ssc']}</td>
+                                                <td>${data[i].fields['adresse']}</td>
+                                                <td>${data[i].fields['arrdt']}</td>
                                                 <td>${data[i].fields['tel']}</td>
                                                 <td>${data[i].fields['horaire_na']}</td>
-                                                <td>${data[i].fields['acces_moto']}</td>
-                                                <td>${data[i].fields['acces_velo']}</td>
+                                                <td>${data[i].fields['type_usagers']}</td>
+                                                <td>${data[i].fields['nb_places']}</td>
+                                                <td>${data[i].fields['nb_pmr']}</td>
+                                                <td>${data[i].fields['nb_voitures_electriques']}</td>
+                                                <td>${data[i].fields['tarif_1h']}</td>
+                                                <td>${data[i].fields['tarif_2h']}</td>
+                                                <td>${data[i].fields['tarif_3h']}</td>
+                                                <td>${data[i].fields['tarif_24h']}</td>
                                                 <td>${data[i].fields['ab_1m_e']}</td>
                                                 <td>${data[i].fields['ab_1a_e']}</td>
                                                 <td>${data[i].fields['abmoto_1me']}</td>
                                                 <td>${data[i].fields['abmoto_1te']}</td>
                                                 <td>${data[i].fields['abmoto_1ae']}</td>
                                                 <td>${data[i].fields['tvelo_1m_e']}</td>
-                                                <td>${data[i].fields['tf_30mn_e']}</td>
-                                                <td>${data[i].fields['tf_1h_e']}</td>
                                                 <td>${data[i].fields['tf_15mn_mo']}</td>
                                                 <td>${data[i].fields['tf_30mn_mo']}</td>
                                                 <td>${data[i].fields['tf_24h_mot']}</td>
@@ -143,37 +158,55 @@ function createTable(){
 function getDescriptionTemplate(parkInfo){
     let template = `<dl>
                         <dt>ADRESSE</dt>
-                            <dd>${parkInfo['adress_ssc']}</dd>
+                            <dd>${parkInfo['adresse']}</dd>
+                        <dt>ARRONDISSEMENT</dt>
+                            <dd>${parkInfo['arrdt']}</dd>
                         <dt>TEL</dt>
                             <dd>${parkInfo['tel']}</dd>
-                        <dt>HORAIRES</dt>
+                        <dt>HORAIRES OUVERTURE NON ABONNES</dt>
                             <dd>${parkInfo['horaire_na']}</dd>
-                        <dt>ACCES MOTO</dt>
-                            <dd>${parkInfo['acces_moto']}</dd>
-                        <dt>ACCES VELO</dt>
-                            <dd>${parkInfo['acces_velo']}</dd>
-                        <dt>ABO MENS VOITURE</dt>
+                        <dt>USAGERS AUTORISES</dt>
+                            <dd>${parkInfo['type_usagers']}</dd>
+                        <dt>NMBRE DE PLACES</dt>
+                            <dd>${parkInfo['nb_places']}</dd>
+                        <dt>NBRE DE PALCES PMR</dt>
+                            <dd>${parkInfo['nb_pmr']}</dd>
+                        <dt>NBRE DE PLACES VOIT ELECT</dt>
+                            <dd>${parkInfo['nb_voitures_electriques']}</dd>
+                        <dt>TARIF 1H</dt>
+                            <dd>${parkInfo['tarif_1h']}</dd>
+                        <dt>TARIF 2H</dt>
+                            <dd>${parkInfo['tarif_2h']}</dd>
+                        <dt>TARIF 3H</dt>
+                            <dd>${parkInfo['tarif_3h']}</dd>
+                        <dt>TARIF 24H</dt>
+                            <dd>${parkInfo['tarif_24h']}</dd>  
+                        <dt>ABONNEMENT MENSUEL VL</dt>
                             <dd>${parkInfo['ab_1m_e']}</dd>
-                        <dt>ABO ANU VOITURE</dt>
+                        <dt>ABONNEMENT ANNUEL VL</dt>
                             <dd>${parkInfo['ab_1a_e']}</dd>
-                        <dt>ABO MENS MOTO</dt>
+                        <dt>ABONNEMENT PMR ANNUEL</dt>
+                            <dd>${parkInfo['abpmr_1a_e']}</dd>
+                        <dt>ABONNEMENT PMR TRIMESTRIEL</dt>
+                            <dd>${parkInfo['abpmr_1t_e']}</dd>
+                        <dt>ABONNEMENT VEHICULE E MENSUEL</dt>
+                            <dd>${parkInfo['abve_1m_e']}</dd>
+                        <dt>ABONNEMENT VEHICULE E ANNUEL</dt>
+                            <dd>${parkInfo['abve_1a_e']}</dd>
+                        <dt>ABONNEMENT MOTO MENSUEL</dt>
                             <dd>${parkInfo['abmoto_1me']}</dd>
-                        <dt>ABO TRIM MOTO</dt>
+                        <dt>ABONNEMENT MOTO TRIMESTRIEL</dt>
                             <dd>${parkInfo['abmoto_1te']}</dd>
-                        <dt>ABO ANU MOTO</dt>
+                        <dt>ABONNEMENT MOTO ANNUEL</dt>
                             <dd>${parkInfo['abmoto_1ae']}</dd>
-                        <dt>ABO MENS VELO</dt>
+                        <dt>ABONNEMENT VELO MENSUEL</dt>
                             <dd>${parkInfo['tvelo_1m_e']}</dd>
-                        <dt>30 MINUTES VOITURE</dt>
-                            <dd>${parkInfo['tf_30mn_e']}</dd>
-                        <dt>1 HEURE VOITURE</dt>
-                            <dd>${parkInfo['tf_1h_e']}</dd>
-                        <dt>15 MINUTES MOTO</dt>
+                        <dt>TARIF MOTO 15 MINUTES</dt>
                             <dd>${parkInfo['tf_15mn_mo']}</dd>
-                        <dt>30 MINUTES MOTO</dt>
+                        <dt>TARIF MOTO 30 MINUTES</dt>
                             <dd>${parkInfo['tf_30mn_mo']}</dd>
-                        <dt>24 HEURES MOTO</dt>
-                            <dd>${parkInfo['tf_24h_mot']}</dd>  
+                        <dt>TARIF MOTO 24 HEURES</dt>
+                            <dd>${parkInfo['tf_24h_mot']}</dd>
                     </dl>`;
     return template; 
 }
@@ -195,9 +228,9 @@ function GetMap(){
     let request = getOpenData();
     
     request.onreadystatechange = function(){
-        console.log('STATE => ', request.readyState)
         if (this.readyState === 4){
             if(this.status === 200){
+                //Je récupère la data des parkings
                 data = this.response.records;
                 for (let i = 0; i < data.length; i++) {
                     let parkingLocations = new Microsoft.Maps.Location(data[i].fields['geo_point_2d'][0], data[i].fields['geo_point_2d'][1]);
@@ -224,7 +257,7 @@ function GetMap(){
 
 function pushpinClicked(e){
     //Make sure the infobox has metadata to display.
-    console.log(e.target.metadata)
+    //console.log(e.target.metadata)
     if (e.target.metadata) {
         //Set the infobox options with the metadata of the pushpin.
         infobox.setOptions({
@@ -256,6 +289,7 @@ function subFormHandler(){
             } else {
                 document.querySelector('.subFormContainer').innerHTML = subFormTemplate;
             }
+            //J'envoie le tableau d'abonnement à la fonction injectData()
             injectData(document.querySelector('#subForm'));
         }
     });
@@ -264,6 +298,9 @@ function subFormHandler(){
 function bookFormHandler(){
     document.querySelector('#book').addEventListener('click', function(e){
         e.preventDefault()
+        //Si le tableau de reservation n'existe pas. je vérifie si le tableau d'abo existe
+        //Si tableau abo existe, je l'enleve et j'injecte le tableau de reservation.
+        //Sinon j'injecte directement le tableau de reservation.
         if(document.querySelector('#bookForm') === null){
             if(document.querySelector('#subForm')){
                 document.querySelector('#subForm').remove();
@@ -271,6 +308,7 @@ function bookFormHandler(){
             } else {
                 document.querySelector('.bookFormContainer').innerHTML = bookFormTemplate;
             }
+            //J'envoie le tableau de reservation à la fonction injectData()
             injectData(document.querySelector('#bookForm'));
         }
     })
@@ -290,12 +328,16 @@ function switchPageHandler(){
     })
 }
 
+//j'utilise l'index du parking (actualIndex) pour injecter la bonne data. 
 function injectData(htmlElement){
     htmlElement.querySelector('select').addEventListener('change',function(){
+        //this.data = <select>.
+        //actualIndex => On a besoin de l'index du parking actuel pour injecter la bonne data
         let subInfo = data[actualIndex].fields[this.value];
 
         if(subInfo == null){
             htmlElement.querySelector('.price').innerHTML = 'Non disponible';
+            //Je désactive le bouton si pas de valeur ou valeur undefined
             htmlElement.querySelector('input[type="button"]').setAttribute('disabled', '1');
         } else if(subInfo === 'ND'){
             htmlElement.querySelector('.price').innerHTML = 'Non disponible';
@@ -304,7 +346,6 @@ function injectData(htmlElement){
             htmlElement.querySelector('.price').innerHTML = subInfo + ' €';
             htmlElement.querySelector('input[type="button"]').removeAttribute('disabled');
         }
-
     })
 }
 
@@ -319,5 +360,5 @@ function generateTable(){
 
 window.addEventListener('load', function(){
     generateTable();
-    switchPageHandler() 
+    switchPageHandler()
 })
