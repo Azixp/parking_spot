@@ -1,0 +1,113 @@
+*
+{
+    box-sizing: border-box;
+}
+
+
+.custom_container{
+    max-width: 75%;
+    margin: 0 auto;
+    overflow: auto;
+    max-height: 90vh;
+}
+
+header{
+    margin: 0 auto;
+    width: 60%;
+    margin-top: 20px;
+}
+
+header nav ul
+{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content:flex-start;
+
+}
+
+#myMap
+{
+    height: 500px;
+    border: 2px solid black;
+}
+
+
+.hide
+{
+    display: none;
+}
+
+.customInfobox
+{
+    overflow: auto;
+    overflow-wrap: break-word;
+    max-height: 235px;
+    width: 240px;
+    background-color:white;
+    padding: 0 1rem 0 1rem;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    cursor: auto;
+    border: 1px solid #55b055;
+}
+
+.customInfobox dt
+{
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.customInfobox dd
+{
+    margin-left: 0;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.customInfobox .close-infoBox
+{
+    text-decoration: none;
+    position: absolute;
+    top:5px;
+    right: 25px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.customInfobox div ul
+{
+    padding-left: 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+hr
+{
+    margin-top: 0;
+}
+
+.customInfobox ul li{
+    list-style: none;
+    display: inline-block;
+}
+
+.customInfobox ul li a{
+    text-decoration: none;
+}
+
+
+@media screen and (min-width:572px){
+
+}
+
+@media screen and (min-width:768px){
+
+}
+
+@media screen and (min-width:992px){
+
+}
+
+@media screen and (min-width:1200px){
+
+}
